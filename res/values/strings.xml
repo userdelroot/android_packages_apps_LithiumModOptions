@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+- LithiumMod Options 
+- 
+- Copyright (C) 2010  userdelroot r00t316@gmail.com (Frank C.)
+-
+- This program is free software: you can redistribute it and/or modify
+- it under the terms of the GNU General Public License as published by
+- the Free Software Foundation, either version 3 of the License, or any later version.
+-
+- This program is distributed in the hope that it will be useful,
+- but WITHOUT ANY WARRANTY; without even the implied warranty of
+- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- GNU General Public License for more details.
+-
+- You should have received a copy of the GNU General Public License
+- along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    
+    <string name="app_name">LithiumMod Options</string>
+<string name="lm_options_title">LithiumMod Options</string>
+<string name="lcd_density_title">LCD Density</string>
+<string name="lcd_density_dialog_title">Select LCD Density</string>
+<string name="setting_lcd_density_progress">Setting LCD Density. Please Wait...</string>
+<string name="lcd_density_change_success">LCD Density has been changed successfully. </string>
+<string name="lcd_density_change_failure">LCD Density change failed.</string>
+<string name="lcd_density_reboot_required">Reboot is required. Reboot now?</string>
+<string name="lcd_density_dialog_title_reboot">LCD Density change Success!</string>
+<string name="dialog_btn_reboot">Yes</string>
+<string name="dialog_btn_cancel">Cancel</string>
+<string name="format_summary_density">Current: <xliff:g id="value">%s</xliff:g></string>
+</resources>

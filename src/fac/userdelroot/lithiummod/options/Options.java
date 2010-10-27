@@ -19,6 +19,7 @@
 
 package fac.userdelroot.lithiummod.options;
 
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
@@ -43,9 +44,15 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private LCDDensity mLcdDensity;
     private static final String PREFS_NAME = "fac.userdelroot.lithiummod.options_preferences";
     private static final String LCD_DENSITY = "lcd_density";
+    private static final String BASH_ENVIRO = "bash_enviro";
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
-    private String mDensitySummary;
+    private CheckBoxPreference mBashEnviro;
+    private String mEnabledStr;
+    private String mDisabledStr;
+    private static final int LCDDENSITY = 1;
+    private static final int BASHENV = 2;
+    private String mTmpString;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,12 +60,15 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
 
         addPreferencesFromResource(R.xml.options);
 
+        mTmpString = "";
         mLcdDensity = new LCDDensity();
         mContext = getApplicationContext();
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
+        mBashEnviro = (CheckBoxPreference) findPreference(BASH_ENVIRO);
         
-        mDensitySummary = mContext.getString(R.string.format_summary_density);
+        mEnabledStr = getStrResId(R.string.lm_enabled);
+        mDisabledStr = getStrResId(R.string.lm_disabled);
         
         // load sharedpreferences
         loadSharedPreferences();
@@ -72,16 +82,19 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         try {
             SharedPreferences prefs = this.getSharedPreferences(PREFS_NAME, 0);
             int val = prefs.getInt(LCD_DENSITY, -1);
-            
+            boolean bashenv = prefs.getBoolean(BASH_ENVIRO, false);
             if (val < 160 && mLcdDensity != null) {
                 val = mLcdDensity.getBuildPropLcdDensity();
                 SharedPreferences.Editor p = this.getSharedPreferences(PREFS_NAME, 0).edit();
                 p.putInt(LCD_DENSITY, val);
                 p.commit();
             }
-
-            mDensitySeekBarPref.setSummary(String.format(mDensitySummary, val));
+            String str = getStrResId(R.string.format_summary_density);
+            mDensitySeekBarPref.setSummary(String.format(str, val));
             
+            str = getStrResId(R.string.bash_enviro_title);
+            
+            mBashEnviro.setTitle(String.format(str, (bashenv == true) ? mDisabledStr : mEnabledStr ));
         }
         catch (NullPointerException e) {
             // do nothing
@@ -118,40 +131,67 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
 
         if (key.equals(LCD_DENSITY)) {
             if (Log.LOGV)
-                Log.v(TAG + "seekbarpref changed " + sharedPreferences.getInt(key, -1));
-            int val = sharedPreferences.getInt(LCD_DENSITY, -1);
+                Log.v(TAG + "seekbarpref changed " + sharedPrefs.getInt(key, -1));
+            int val = sharedPrefs.getInt(LCD_DENSITY, -1);
             if (val < 160) 
                 val = 160;
+           
+            String str = getStrResId(R.string.format_summary_density);
+            mDensitySeekBarPref.setSummary(String.format(str,val));
             
-            mDensitySeekBarPref.setSummary(String.format(mDensitySummary,val));
-            prepareLcdDensityChange(sharedPreferences.getInt(key, -1));
+            if (mLcdDensity == null) {
+                if (Log.LOGV)
+                    Log.e(TAG + "onSharedPreferenceChanged() mLcdDensity is null ");
+                return;
+            }
+                
+            prepareLcdDensityChange(LCDDENSITY,R.string.setting_lcd_density_progress);
+            mLcdDensity.setPhoneDensity(val);
+            return;
+        }
+        
+        if (key.equals(BASH_ENVIRO)) {
+           boolean val = sharedPrefs.getBoolean(BASH_ENVIRO, false);
+           String str = mContext.getResources().getString(R.string.bash_enviro_title);
+           mBashEnviro.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
+           prepareLcdDensityChange(BASHENV, R.string.bash_env_progress_dialog);
+           CommandsHelper.bashEnv(val, mContext);
+           mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
+           return;
         }
     }
 
-    private void prepareLcdDensityChange(int density) {
-
-        if (mLcdDensity == null)
-            return;
+    private void prepareLcdDensityChange(final int which, int resId) {
         
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        String str = mContext.getResources().getString(R.string.setting_lcd_density_progress);
+        String str = mContext.getResources().getString(resId);
         mProgressDialog.setMessage(str);
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
-        
-
-        mLcdDensity.setPhoneDensity(density);
         mProgressDialog.setOnDismissListener(new OnDismissListener() {
 
             @Override
             public void onDismiss(DialogInterface dialog) {
                 
-                showRebootDialog();
+                switch (which) {
+                    case LCDDENSITY:
+                        showRebootDialog();
+                        break;
+                    
+                    case BASHENV:
+                        String str = mContext.getString(R.string.bash_env_setup_completed);
+                        if (mTmpString != null)
+                            Toast.makeText(mContext, String.format(str, mTmpString), Toast.LENGTH_LONG).show();
+                        break;
+                        
+                    default:
+                        break;
+                }
             }
             
         });
@@ -186,6 +226,11 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
 
     }
 
+    
+    private String getStrResId(int strResId) {
+        return mContext.getResources().getString(strResId);
+    }
+    
     @Override
     protected void onResume() {
         super.onResume();

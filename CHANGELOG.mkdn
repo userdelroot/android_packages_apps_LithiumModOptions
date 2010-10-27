@@ -1,0 +1,33 @@
+2010-10-27  userdelroot <r00t316@gmail.com>
+
+  * .../userdelroot/lithiummod/options/Options.java: added bashenv options. 
+  Fixed progressdialog to be called for other options. Fixed some misc stuff
+
+  * .../lithiummod/options/CommandsHelper.java: Added the bashenv helpers
+
+  * res/xml/options.xml: added the bashenv option
+
+  * res/values/strings.xml: added strings for bash env and some defaults
+
+  * assets/bash_aliases, assets/bashrc: added bashrc / bash_aliases assets for
+  starter files
+
+  * res/drawable-ldpi/icon.png, res/drawable-mdpi/icon.png: resized and fixed
+  icons for different screens
+
+  * res/drawable-hdpi/icon.png: resized and fixed icon
+
+2010-10-26  userdelroot <r00t316@gmail.com>
+
+  * AndroidManifest.xml: fixed error, i was missing a damn >
+
+  * AndroidManifest.xml: fixed density so screen displays correctly with
+  different densities
+
+  * AndroidManifest.xml: fixed versionCode warnings
+
+  * res/layout/seekbar_pref.xml: fixed localized attrib
+
+  * Android.mk: added Android.mk file for building with lithium mod
+
+  * : added CHANGELOG.mkdn

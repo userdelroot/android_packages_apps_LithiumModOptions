@@ -30,4 +30,13 @@
 <string name="dialog_btn_reboot">Yes</string>
 <string name="dialog_btn_cancel">Cancel</string>
 <string name="format_summary_density">Current: <xliff:g id="value">%s</xliff:g></string>
+<string name="bash_enviro_title"><xliff:g id="value">%s</xliff:g> Bash Env</string>
+<string name="bash_enviro_summary">Current: <xliff:g id="value">%s</xliff:g></string>
+<string name="lm_enabled">Enabled</string>
+<string name="lm_disabled">Disabled</string>
+<string name="external_storage_umounted">Bash Env Failed: External Storage not mounted!</string>
+<string name="bash_env_not_writeable">Bash Env Failed: File not writable</string>
+<string name="unknown_failure">Bash Env Failed</string>
+<string name="bash_env_progress_dialog">Bash Env setting up. Please wait...</string>
+<string name="bash_env_setup_completed">Bash Env <xliff:g id="value">%s</xliff:g> successfully</string>
 </resources>

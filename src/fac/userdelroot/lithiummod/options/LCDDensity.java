@@ -19,14 +19,13 @@
 
 package fac.userdelroot.lithiummod.options;
 
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.InputStreamReader;
 
 /**
  * LCDDensity to change the lcd density
@@ -37,17 +36,23 @@ public class LCDDensity {
 
     private static final String TAG = "LCDDensity ";
 
-    private static final HashMap<String, String> mPhoneDensityMap = new HashMap<String, String>();
-
-    private static final String MODEL = Build.MODEL.toLowerCase();
+    // commented out as the min / max lcd density is hard set min 160 max 250
+    //private static final HashMap<String, String> mPhoneDensityMap = new HashMap<String, String>();
+   // private static final String MODEL = Build.MODEL.toLowerCase();
+    
+    private static final int iMaxLcdDensity = 250;
+    private static final int iMinLcdDensity = 160;
 
     private boolean bSuccess;
 
     // constructor
     LCDDensity() {
         // fill in the phone default densities.
-        mPhoneDensityMap.put("droid", "240");
-        mPhoneDensityMap.put("incredible", "240");
+        
+        // we hard set max to 250
+        // below is not needed commented out for now.
+        //mPhoneDensityMap.put("droid", "240");
+        //mPhoneDensityMap.put("incredible", "240");
         bSuccess = false;
     }
 
@@ -57,52 +62,75 @@ public class LCDDensity {
      */
     public int getBuildPropLcdDensity() {
 
-        if (Log.LOGV)
-            Log.v(TAG + "");
-
         Process p = null;
-        int cur = 0;
+        int cur = -1;
 
         try {
 
             // get root enviroment
             p = Runtime.getRuntime().exec("su");
             DataOutputStream stdout = new DataOutputStream(p.getOutputStream());
-            DataInputStream stdin = new DataInputStream(p.getInputStream());
 
-            
-            stdout.writeBytes("getprop ro.sf.lcd_density\n");
+            // BufferedReader better to use then DataInputStream because of readLine()
+            BufferedReader stdin = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            /*
+             * Using getprop is unreliable if a user changes build.prop manually and does not reboot the phone,
+             * getprop will be out of sync.  
+             * To fix this we do the follow sed | cut this will also grab the value even with spaces!
+             */
+            //stdout.writeBytes("getprop ro.sf.lcd_density\n");
+            String str = "busybox cat /system/build.prop | sed -n '/^ro.sf.lcd_density/p' | sed -e 's: ::g' | cut -d= -f2\n";
+            stdout.writeBytes(str);
             stdout.flush();
+            String temp = null;
 
-            String temp  = stdin.readLine().trim();
-            
-            cur = Integer.valueOf(temp);
-            
             stdout.writeBytes("exit\n");
+            stdout.flush(); 
+           
+           temp = stdin.readLine();
+                
+            if (temp != null) {
+                temp = temp.replaceAll(" ", "");
+                cur = Integer.valueOf(temp);
+            }
+            
+            // close std in/out streams
             stdout.close();
             stdin.close();
 
         } catch (IOException e) {
             if (Log.LOGV)
                 Log.e(TAG + "IOException " + e.getLocalizedMessage().toString());
-
+        }
+        finally { 
+            if (p !=null )
+                p.destroy();
         }
         
         if (Log.LOGV)
             Log.v(TAG + "getBuildPropDensity() " + cur);
         
-        return (cur < 160) ? 160 : cur;
+        return cur;
     }
 
     /**
-     * gets the default lcd density for this phone
+     * gets the default lcd density
      * 
      * @return
      */
-    public String getDefaultDensity() {
-        return mPhoneDensityMap.get(MODEL);
+    public int getMaxDensity() {
+        return iMaxLcdDensity;
+        //return mPhoneDensityMap.get(MODEL);
     }
 
+    /**
+     * gets the min lcd density
+     * @return
+     */
+    public int getMinDensity() {
+        return iMinLcdDensity;
+    }
+    
     /**
      * Sets the requested density
      * 
@@ -127,10 +155,10 @@ public class LCDDensity {
                     DataOutputStream stdout = new DataOutputStream(p.getOutputStream());
 
                     // this is a little easier to read then one long ass string
+                    // minor change to regexp to grab everything after density.*
                     String str1 = "busybox cat /system/build.prop |";
-                    String str2 = " sed -e \"s/ro\\.sf\\.lcd_density=.*/ro\\.sf\\.lcd_density="
-                            + density + "/g\"";
-                    String str3 = " > /data/local/tmp/build.prop.new\n";
+                    String str2 = " sed -e 's:ro.sf.lcd_density.*:ro.sf.lcd_density="+density+":g' ";
+                    String str3 = "> /data/local/tmp/build.prop.new\n";
                     String command = str1 + str2 + str3;
                     // do some crazy sed stuff
                     stdout.writeBytes(command);
@@ -193,6 +221,10 @@ public class LCDDensity {
                     if (Log.LOGV)
                         Log.e(TAG + "InterruptedException " + e.getLocalizedMessage().toString());
 
+                }
+                finally {
+                    if (p != null)
+                        p.destroy();
                 }
 
             }

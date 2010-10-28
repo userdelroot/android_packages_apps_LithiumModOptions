@@ -47,7 +47,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final String PREFS_NAME = "fac.userdelroot.lithiummod.options_preferences";
     private static final String LCD_DENSITY = "lcd_density";
     private static final String BASH_ENVIRO = "bash_enviro";
-    private static final String LCD_DENSITY_DISABLED = "lcd_density_disabled";
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
     private CheckBoxPreference mBashEnviro;
@@ -112,7 +111,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                      */
                     if (propval < 0) {
                         Toast.makeText(mContext, R.string.lcd_density_prop_missing, Toast.LENGTH_LONG).show();
-                        p.putBoolean(LCD_DENSITY_DISABLED, true);
                         lcdDisabled = true;
                     }
                     else {

@@ -1,4 +1,22 @@
+2010-10-28  userdelroot <r00t316@gmail.com>
+
+  * .../lithiummod/options/SeekBarPref.java: misc fixes, also includes 250 as
+  the max
+
+  * .../userdelroot/lithiummod/options/Options.java: Fixed force closes.  Fixed
+  to disable Lcd Density settings when the prop is not found in build.prop.
+
+  * src/fac/userdelroot/lithiummod/options/Log.java: added the proper App name
+
+  * .../userdelroot/lithiummod/options/LCDDensity.java: Fixed the code from FC.
+   Fixed code that was hanging when nothing was returned in the shell.  misc
+  fixes
+
+  * res/values/strings.xml: added more strings
+
 2010-10-27  userdelroot <r00t316@gmail.com>
+
+  * CHANGELOG.mkdn: updated changelog
 
   * .../userdelroot/lithiummod/options/Options.java: added bashenv options. 
   Fixed progressdialog to be called for other options. Fixed some misc stuff

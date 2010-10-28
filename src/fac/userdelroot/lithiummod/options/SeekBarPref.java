@@ -52,7 +52,7 @@ public class SeekBarPref extends DialogPreference implements View.OnKeyListener 
 
     private static int mSeekbar_Max;
 
-    private final int mSeekbar_Min = 160;
+    private static int mSeekbar_Min;
     
     private int mSeekbar_Diff;
 
@@ -81,6 +81,8 @@ public class SeekBarPref extends DialogPreference implements View.OnKeyListener 
             mDefaultVal = prefs.getInt(LCD_DENSITY, -1);
         }
         catch (Exception e) {
+            if (Log.LOGV)
+                Log.e(TAG + "loadSharedPrefs exception" + e.getLocalizedMessage().toString());
             // do nothing
         }
     }
@@ -94,17 +96,14 @@ public class SeekBarPref extends DialogPreference implements View.OnKeyListener 
         mTextView = (TextView) view.findViewById(R.id.updatetext);
 
         mSeekBar = getSeekBar(view);
+                
+        mSeekbar_Max = density.getMaxDensity();
+        mSeekbar_Min = density.getMinDensity();
         
         loadSharedPrefs();
-        mSeekbar_Max = Integer.valueOf(density.getDefaultDensity());
-        
-        
-        // max density
-        if (mSeekbar_Max <= 0) 
-            mSeekbar_Max = 240;
-        
+            
         // minimum density
-        if (mDefaultVal < 160) // we were never set
+        if (mDefaultVal < mSeekbar_Min) 
             mDefaultVal = mSeekbar_Min;
 
         // diff the density for scaling

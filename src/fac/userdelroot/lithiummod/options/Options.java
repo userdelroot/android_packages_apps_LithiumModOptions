@@ -20,7 +20,6 @@
 package fac.userdelroot.lithiummod.options;
 
 import android.preference.CheckBoxPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -39,12 +38,16 @@ import android.os.Bundle;
  */
 public class Options extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
+
+    private static final String VERSION = "0.1-alpha";
+    
     private static final String TAG = "Options ";
     private static Context mContext;
     private LCDDensity mLcdDensity;
     private static final String PREFS_NAME = "fac.userdelroot.lithiummod.options_preferences";
     private static final String LCD_DENSITY = "lcd_density";
     private static final String BASH_ENVIRO = "bash_enviro";
+    private static final String LCD_DENSITY_DISABLED = "lcd_density_disabled";
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
     private CheckBoxPreference mBashEnviro;
@@ -53,6 +56,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final int LCDDENSITY = 1;
     private static final int BASHENV = 2;
     private String mTmpString;
+    
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,15 +87,56 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             SharedPreferences prefs = this.getSharedPreferences(PREFS_NAME, 0);
             int val = prefs.getInt(LCD_DENSITY, -1);
             boolean bashenv = prefs.getBoolean(BASH_ENVIRO, false);
-            if (val < 160 && mLcdDensity != null) {
-                val = mLcdDensity.getBuildPropLcdDensity();
-                SharedPreferences.Editor p = this.getSharedPreferences(PREFS_NAME, 0).edit();
-                p.putInt(LCD_DENSITY, val);
-                p.commit();
-            }
-            String str = getStrResId(R.string.format_summary_density);
-            mDensitySeekBarPref.setSummary(String.format(str, val));
+            int propval = 0;
             
+            boolean lcdDisabled = false;
+            /*
+             * Always check build.prop first.
+             * If build.prop and LM do not match use the build.prop lcd_density
+             */
+            if (mLcdDensity != null) {
+                Log.i(TAG + "getbuildproplcddensity");
+                propval = mLcdDensity.getBuildPropLcdDensity();
+                if (propval != val || propval < 0) {
+
+                    if (propval < mLcdDensity.getMinDensity()) {
+                        if (Log.LOGV)
+                            Log.w(TAG + "LCD Density " + propval + " is below " + mLcdDensity.getMinDensity() + " min value");
+                    }
+                    
+                    SharedPreferences.Editor p = this.getSharedPreferences(PREFS_NAME, 0).edit();
+                    
+                    /*
+                     * If this is 0 then, either they have no ro.sf.lcd_density line or they have it commented out.
+                     * Bitch out it to user and disable this feature until they fix they build.prop
+                     */
+                    if (propval < 0) {
+                        Toast.makeText(mContext, R.string.lcd_density_prop_missing, Toast.LENGTH_LONG).show();
+                        p.putBoolean(LCD_DENSITY_DISABLED, true);
+                        lcdDisabled = true;
+                    }
+                    else {
+                    
+                        p.putInt(LCD_DENSITY, propval);
+                        p.commit();
+                        val = propval;
+                    }
+                    if (Log.LOGV)
+                        Log.i(TAG + "loadSharedPreferences() build.prop and lm options lcd_density do not match\n using build.prop");
+                }
+            }
+            
+
+            String str = null;
+            if (lcdDisabled) {
+                str = getStrResId(R.string.lcd_density_disabled);
+                mDensitySeekBarPref.setSummary(str);
+                mDensitySeekBarPref.setEnabled(false);
+            }
+            else {
+                str = getStrResId(R.string.format_summary_density);
+                mDensitySeekBarPref.setSummary(String.format(str, val));
+            }
             str = getStrResId(R.string.bash_enviro_title);
             
             mBashEnviro.setTitle(String.format(str, (bashenv == true) ? mDisabledStr : mEnabledStr ));
@@ -102,7 +147,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 Log.v(TAG + "loadSharedPreferences() nullpointer " + e.getLocalizedMessage().toString());
         }
     }
-
+    
     /**
      * showRebootDialog() if success on setting the lcd density popup dialog to
      * reboot.
@@ -137,8 +182,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             if (Log.LOGV)
                 Log.v(TAG + "seekbarpref changed " + sharedPrefs.getInt(key, -1));
             int val = sharedPrefs.getInt(LCD_DENSITY, -1);
-            if (val < 160) 
-                val = 160;
            
             String str = getStrResId(R.string.format_summary_density);
             mDensitySeekBarPref.setSummary(String.format(str,val));
@@ -148,7 +191,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                     Log.e(TAG + "onSharedPreferenceChanged() mLcdDensity is null ");
                 return;
             }
-                
+            
             prepareLcdDensityChange(LCDDENSITY,R.string.setting_lcd_density_progress);
             mLcdDensity.setPhoneDensity(val);
             return;
@@ -225,11 +268,11 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         }).setNegativeButton(R.string.dialog_btn_cancel, null).show();
 
     }
-
     
     private String getStrResId(int strResId) {
         return mContext.getResources().getString(strResId);
     }
+    
     
     @Override
     protected void onResume() {

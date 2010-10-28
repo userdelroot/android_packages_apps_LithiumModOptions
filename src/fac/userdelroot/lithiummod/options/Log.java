@@ -23,7 +23,7 @@ package fac.userdelroot.lithiummod.options;
  * @see android.util.Log
  */
 final class Log {
-	public final static String LOGTAG = "LithiumMod";
+	public final static String LOGTAG = "LithiumModOptions";
 
 	static final boolean LOGV = true;
 

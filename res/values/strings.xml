@@ -39,4 +39,6 @@
 <string name="unknown_failure">Bash Env Failed</string>
 <string name="bash_env_progress_dialog">Bash Env setting up. Please wait...</string>
 <string name="bash_env_setup_completed">Bash Env <xliff:g id="value">%s</xliff:g> successfully</string>
+<string name="lcd_density_prop_missing">Your build.prop is missing:\n\n\tro.sf.lcd_density\n\nLCD Density will be disabled</string>
+<string name="lcd_density_disabled">Disabled missing ro.sf.lcd_density prop.</string>
 </resources>

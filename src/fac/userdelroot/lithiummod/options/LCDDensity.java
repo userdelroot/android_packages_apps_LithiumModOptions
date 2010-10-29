@@ -67,6 +67,7 @@ public class LCDDensity {
 
         try {
 
+            // TODO: this does not require root privs. can be done as normal 
             // get root enviroment
             p = Runtime.getRuntime().exec("su");
             DataOutputStream stdout = new DataOutputStream(p.getOutputStream());
@@ -210,6 +211,7 @@ public class LCDDensity {
                             Log.i(TAG + "LCD Density setting failure ");
                     }
 
+                    p.destroy();
                     Thread.sleep(1000);
                     myHandler.handleMessage(myHandler.obtainMessage());
 
@@ -221,10 +223,6 @@ public class LCDDensity {
                     if (Log.LOGV)
                         Log.e(TAG + "InterruptedException " + e.getLocalizedMessage().toString());
 
-                }
-                finally {
-                    if (p != null)
-                        p.destroy();
                 }
 
             }

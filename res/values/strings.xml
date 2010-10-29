@@ -18,27 +18,30 @@
  -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     
-    <string name="app_name">LithiumMod Options</string>
-<string name="lm_options_title">LithiumMod Options</string>
-<string name="lcd_density_title">LCD Density</string>
-<string name="lcd_density_dialog_title">Select LCD Density</string>
-<string name="setting_lcd_density_progress">Setting LCD Density. Please Wait...</string>
-<string name="lcd_density_change_success">LCD Density has been changed successfully. </string>
-<string name="lcd_density_change_failure">LCD Density change failed.</string>
-<string name="lcd_density_reboot_required">Reboot is required. Reboot now?</string>
-<string name="lcd_density_dialog_title_reboot">LCD Density change Success!</string>
-<string name="dialog_btn_reboot">Yes</string>
-<string name="dialog_btn_cancel">Cancel</string>
-<string name="format_summary_density">Current: <xliff:g id="value">%s</xliff:g></string>
-<string name="bash_enviro_title"><xliff:g id="value">%s</xliff:g> Bash Env</string>
-<string name="bash_enviro_summary">Current: <xliff:g id="value">%s</xliff:g></string>
+<!-- Common -->
+<string name="app_name">LithiumMod Options</string>
 <string name="lm_enabled">Enabled</string>
 <string name="lm_disabled">Disabled</string>
-<string name="external_storage_umounted">Bash Env Failed: External Storage not mounted!</string>
-<string name="bash_env_not_writeable">Bash Env Failed: File not writable</string>
-<string name="unknown_failure">Bash Env Failed</string>
-<string name="bash_env_progress_dialog">Bash Env setting up. Please wait...</string>
+<string name="lm_options_title">LithiumMod Options</string>
+<string name="dialog_btn_reboot">Yes</string>
+<string name="dialog_btn_cancel">Cancel</string>
+<string name="format_summary_current">Current: <xliff:g id="value">%s</xliff:g></string>
+<string name="loading_please_wait">Loading please wait..</string>
+<string name="external_storage_umounted">External Storage not mounted!</string>
+<string name="file_not_writeable">Failed: File not writable</string>
+<string name="unknown_failure">Unknown Failure</string>
+<string name="reboot_required_msg">Reboot is required. Reboot now?</string>
+<!-- end -->
+
+<string name="lcd_density_title">LCD Density</string>
+<string name="lcd_density_dialog_title">Select LCD Density</string>
+<string name="lcd_density_change_success">LCD Density has been changed successfully. </string>
+<string name="lcd_density_change_failure">LCD Density change failed.</string>
+<string name="lcd_density_dialog_title_reboot">LCD Density change Success!</string>
+<string name="bash_enviro_title"><xliff:g id="value">%s</xliff:g> Bash Env</string>
 <string name="bash_env_setup_completed">Bash Env <xliff:g id="value">%s</xliff:g> successfully</string>
 <string name="lcd_density_prop_missing">Your build.prop is missing:\n\n\tro.sf.lcd_density\n\nLCD Density will be disabled</string>
 <string name="lcd_density_disabled">Disabled missing ro.sf.lcd_density prop.</string>
+<string name="block_ads"><xliff:g id="value">%s</xliff:g> Block Ads</string>
+<string name="block_ads_success">Block Ads change Success!</string>
 </resources>

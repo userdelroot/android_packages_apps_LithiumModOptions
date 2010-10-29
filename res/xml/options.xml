@@ -25,5 +25,6 @@
   
   <CheckBoxPreference 
   	android:key="bash_enviro" />
-  
+  	
+  	<CheckBoxPreference android:key="block_ads" />  
 </PreferenceScreen>

@@ -1,4 +1,21 @@
+2010-10-29  userdelroot <r00t316@gmail.com>
+
+  * .../userdelroot/lithiummod/options/Options.java: added block ads support
+
+  * .../userdelroot/lithiummod/options/LCDDensity.java: minor fix
+
+  * .../lithiummod/options/CommandsHelper.java: added block ads and minor fixes
+
+  * res/xml/options.xml: added block ads pref
+
+  * res/values/strings.xml: added block ads and organized some common strings
+
 2010-10-28  userdelroot <r00t316@gmail.com>
+
+  * .../userdelroot/lithiummod/options/Options.java: removed some unneeded
+  coded
+
+  * CHANGELOG.mkdn: updated
 
   * .../lithiummod/options/SeekBarPref.java: misc fixes, also includes 250 as
   the max

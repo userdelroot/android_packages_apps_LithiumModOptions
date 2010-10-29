@@ -21,8 +21,12 @@
 package fac.userdelroot.lithiummod.options;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,12 +46,18 @@ public class CommandsHelper {
     private static final String BASH_RC = "/mnt/sdcard/.bashrc";
     private static final String BASH_ALIASES = "/mnt/sdcard/.bash_aliases";
     private static final String BASH_BIN = "/mnt/sdcard/bin";
+    private static final String HOSTS_FILE = "/system/etc/hosts";
+    private static final String HOSTS_FILE_ORIG = "/system/etc/hosts.orig.lm";
+    private static final String BLOCK_ADS = "/system/etc/adblock.hosts.lm";
+    private static final String BLOCK_ADS_TEMP = "/mnt/sdcard/adblock.lithium";
+    
     private static final String ASSET_BASH_RC = "bashrc";
     private static final String ASSET_BASH_ALIASES = "bash_aliases";
-    
+    private static final String ASSET_BLOCK_ADS = "hosts.adblocking";
     
     /**
      * Reboot the device, pretty simple
+     * Requires: root
      */
     public static void reboot() {
 
@@ -66,6 +76,12 @@ public class CommandsHelper {
         }
     }
     
+    /**
+     * Setup bash enviroment on the sdcard
+     * does not require root
+     * @param enabled
+     * @param c
+     */
     public static void bashEnv(boolean enabled, Context c) {
         
         // make sure the device external storage is mounted.
@@ -95,6 +111,12 @@ public class CommandsHelper {
         Options.dismissProgressDialog();
     }
 
+    
+    /**
+     * Write bash_aliases
+     * does not require root
+     * @param c
+     */
     private static void writeBashAliases(Context c) {
 
         InputStream is = null;
@@ -108,7 +130,7 @@ public class CommandsHelper {
         try {
         
             if (!ofile.exists() && !ofile.createNewFile()) {
-                Toast.makeText(c, R.string.bash_env_not_writeable, Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, R.string.file_not_writeable, Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -137,6 +159,11 @@ public class CommandsHelper {
         }    
     }
 
+    /**
+     * Write bashrc
+     * does not require root
+     * @param c
+     */
     private static void writeBashRc(Context c) {
 
         File ofile = new File(BASH_RC);
@@ -147,7 +174,7 @@ public class CommandsHelper {
         try {
             
             if (!ofile.exists() && !ofile.createNewFile()) {
-                Toast.makeText(c, R.string.bash_env_not_writeable, Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, R.string.file_not_writeable, Toast.LENGTH_SHORT).show();
                 return;
             }
             
@@ -185,4 +212,130 @@ public class CommandsHelper {
         }
         writeBashAliases(c);
     }
+
+    /**
+     * block ads hosts file Requires: root
+     * @param block
+     * @param c
+     */
+    public static void blockAds(final boolean block, final Context c) {
+
+        Thread t = new Thread() {
+
+            File tmp = null;
+            File hosts = null;            
+            File ads = null;
+
+            InputStream is = null;
+
+            FileOutputStream fos = null;
+
+            OutputStreamWriter osw = null;
+
+            Process p = null;
+
+            DataOutputStream stdout = null;
+
+
+            @Override
+            public void run() {
+
+                // only do this if file does not exist already
+                ads = new File(BLOCK_ADS);
+                try {
+
+                    // get root access
+                    p = Runtime.getRuntime().exec("su");
+                    stdout = new DataOutputStream(p.getOutputStream());
+
+                    // mount read/write
+                    stdout.writeBytes("busybox mount -o remount,rw /system\n");
+                    stdout.flush();
+                    
+                    if (!ads.exists()) {
+                        tmp = new File(BLOCK_ADS_TEMP);
+                        
+                        // write the asset file out to /system/adblock.disabled
+                        is = c.getAssets().open(ASSET_BLOCK_ADS);
+                        fos = new FileOutputStream(tmp);
+                        osw = new OutputStreamWriter(fos);
+
+                        int nextChar;
+
+                        while ((nextChar = is.read()) != -1) {
+                            osw.write(nextChar);
+                            osw.flush();
+                        }
+
+                        // Close the streams
+                        is.close();
+                        fos.close();
+                        osw.close();
+                        
+                        // place current hosts file to top of ads host file
+                        stdout.writeBytes("busybox cat " + HOSTS_FILE + " | cat - " + BLOCK_ADS_TEMP + " > " + BLOCK_ADS + "\n");
+                        stdout.flush();
+
+                       
+                    
+                        // backup original hosts file
+                        hosts = new File(HOSTS_FILE_ORIG);
+                        if (!hosts.exists()) {
+                            stdout.writeBytes("busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + "\n");
+                            stdout.flush();
+                        }
+                    
+                    }
+
+                    // at this point we should have all files in place.
+        
+                    // block or unblock adds
+                    if (block) {
+                        stdout.writeBytes("busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + "\n");
+                        stdout.flush();
+                        Log.i(TAG + "block ads " + block);
+                        
+                    }
+                    else {
+                        stdout.writeBytes("busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + "\n");
+                        stdout.flush();
+                        Log.i(TAG + "block ads " + block);
+                    }
+
+                    Thread.sleep(500);
+                    // mount read-only
+                    stdout.writeBytes("busybox mount -o remount,ro /system\n");
+                    stdout.flush();
+                    stdout.writeBytes("exit\n");
+                    stdout.flush();
+                    stdout.close();
+                    ads = null;
+                
+                } catch (IOException e) {
+                    if (Log.LOGV)
+                        Log.e(TAG + "IOException: " + e.getLocalizedMessage());
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                finally {
+                    if (p != null)
+                        p.destroy();
+                }
+                
+                myHandler.handleMessage(myHandler.obtainMessage());
+            }
+
+        };
+        t.start();
+    }
+    
+    
+    static Handler myHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            Options.dismissProgressDialog();
+        }
+    };
 }

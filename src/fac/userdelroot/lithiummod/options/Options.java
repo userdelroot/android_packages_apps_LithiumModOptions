@@ -44,16 +44,21 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final String TAG = "Options ";
     private static Context mContext;
     private LCDDensity mLcdDensity;
+    
+    // SharedPreferences keys and keys for xml files
     private static final String PREFS_NAME = "fac.userdelroot.lithiummod.options_preferences";
     private static final String LCD_DENSITY = "lcd_density";
     private static final String BASH_ENVIRO = "bash_enviro";
+    private static final String BLOCK_ADS = "block_ads";
+    
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
-    private CheckBoxPreference mBashEnviro;
+    private CheckBoxPreference mBashEnviro, mBlockAds;
     private String mEnabledStr;
     private String mDisabledStr;
     private static final int LCDDENSITY = 1;
     private static final int BASHENV = 2;
+    private static final int BLOCKADS = 3;
     private String mTmpString;
     
     
@@ -69,6 +74,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
         mBashEnviro = (CheckBoxPreference) findPreference(BASH_ENVIRO);
+        mBlockAds = (CheckBoxPreference) findPreference(BLOCK_ADS);
         
         mEnabledStr = getStrResId(R.string.lm_enabled);
         mDisabledStr = getStrResId(R.string.lm_disabled);
@@ -86,6 +92,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             SharedPreferences prefs = this.getSharedPreferences(PREFS_NAME, 0);
             int val = prefs.getInt(LCD_DENSITY, -1);
             boolean bashenv = prefs.getBoolean(BASH_ENVIRO, false);
+            boolean blockads = prefs.getBoolean(BLOCK_ADS, false);
             int propval = 0;
             
             boolean lcdDisabled = false;
@@ -132,12 +139,15 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 mDensitySeekBarPref.setEnabled(false);
             }
             else {
-                str = getStrResId(R.string.format_summary_density);
+                str = getStrResId(R.string.format_summary_current);
                 mDensitySeekBarPref.setSummary(String.format(str, val));
             }
+           
             str = getStrResId(R.string.bash_enviro_title);
-            
             mBashEnviro.setTitle(String.format(str, (bashenv == true) ? mDisabledStr : mEnabledStr ));
+
+            str = getStrResId(R.string.block_ads);
+            mBlockAds.setTitle(String.format(str, (blockads == true) ? mDisabledStr : mEnabledStr));
         }
         catch (NullPointerException e) {
             // do nothing
@@ -146,33 +156,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         }
     }
     
-    /**
-     * showRebootDialog() if success on setting the lcd density popup dialog to
-     * reboot.
-     * 
-     * @para m success
-     */
-    public static void showRebootDialag(boolean success) {
-        if (!success) {
-            Toast.makeText(mContext, R.string.lcd_density_change_failure, Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-
-        new AlertDialog.Builder(mContext)
-                .setTitle(R.string.lcd_density_dialog_title_reboot)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setMessage(R.string.lcd_density_reboot_required)
-                .setPositiveButton(R.string.dialog_btn_reboot,
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                CommandsHelper.reboot();
-                            }
-                        }).setNegativeButton(R.string.dialog_btn_cancel, null).show();
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
 
@@ -181,7 +164,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 Log.v(TAG + "seekbarpref changed " + sharedPrefs.getInt(key, -1));
             int val = sharedPrefs.getInt(LCD_DENSITY, -1);
            
-            String str = getStrResId(R.string.format_summary_density);
+            String str = getStrResId(R.string.format_summary_current);
             mDensitySeekBarPref.setSummary(String.format(str,val));
             
             if (mLcdDensity == null) {
@@ -190,7 +173,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 return;
             }
             
-            prepareLcdDensityChange(LCDDENSITY,R.string.setting_lcd_density_progress);
+            prepareLcdDensityChange(LCDDENSITY,R.string.loading_please_wait);
             mLcdDensity.setPhoneDensity(val);
             return;
         }
@@ -199,10 +182,20 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
            boolean val = sharedPrefs.getBoolean(BASH_ENVIRO, false);
            String str = mContext.getResources().getString(R.string.bash_enviro_title);
            mBashEnviro.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
-           prepareLcdDensityChange(BASHENV, R.string.bash_env_progress_dialog);
-           CommandsHelper.bashEnv(val, mContext);
            mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
+           prepareLcdDensityChange(BASHENV, R.string.loading_please_wait);
+           CommandsHelper.bashEnv(val, mContext);
            return;
+        }
+        
+        if (key.equals(BLOCK_ADS)) {
+            boolean val = sharedPrefs.getBoolean(BLOCK_ADS, false);
+            String str = mContext.getResources().getString(R.string.block_ads);
+            mBlockAds.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
+            mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
+            prepareLcdDensityChange(BLOCKADS, R.string.loading_please_wait);
+            CommandsHelper.blockAds(val, mContext);
+            return;
         }
     }
 
@@ -221,7 +214,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 
                 switch (which) {
                     case LCDDENSITY:
-                        showRebootDialog();
+                        showRebootDialog(LCDDENSITY);
                         break;
                     
                     case BASHENV:
@@ -229,7 +222,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                         if (mTmpString != null)
                             Toast.makeText(mContext, String.format(str, mTmpString), Toast.LENGTH_LONG).show();
                         break;
-                        
+                    case BLOCKADS:
+                        showRebootDialog(BLOCKADS);
                     default:
                         break;
                 }
@@ -242,29 +236,54 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         mProgressDialog.dismiss();
     }
     
-    private void showRebootDialog() {
-        boolean isSuccess = false;
-        
-        if (mLcdDensity != null)
-            isSuccess = mLcdDensity.getIsSuccess();
-        
-        if (!isSuccess) {
-            Toast.makeText(this, R.string.lcd_density_change_failure, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        new AlertDialog.Builder(this).setTitle(R.string.lcd_density_dialog_title_reboot)
-        .setIcon(android.R.drawable.ic_dialog_alert)
-        .setMessage(R.string.lcd_density_reboot_required)
-        .setPositiveButton(R.string.dialog_btn_reboot, new DialogInterface.OnClickListener() {
-            
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                CommandsHelper.reboot();
-                dialog.dismiss();
-            }   
-        }).setNegativeButton(R.string.dialog_btn_cancel, null).show();
+    /**
+     * Show a reboot dialog to have changes take affect
+     * @param which
+     */
+    private void showRebootDialog(int which) {
 
+        int title = 0;
+        int msg = 0;
+        switch (which) {
+            case LCDDENSITY:
+                boolean isSuccess = false;
+
+                if (mLcdDensity != null)
+                    isSuccess = mLcdDensity.getIsSuccess();
+
+                if (!isSuccess) {
+                    Toast.makeText(this, R.string.lcd_density_change_failure, Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+                
+                title = R.string.lcd_density_dialog_title_reboot;
+                msg = R.string.reboot_required_msg;
+                break;
+                
+            case BLOCKADS:
+                title = R.string.block_ads_success;
+                msg = R.string.reboot_required_msg;
+                break;
+                
+            default:
+               return;
+
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setMessage(msg)
+                .setPositiveButton(R.string.dialog_btn_reboot,
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                CommandsHelper.reboot();
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton(R.string.dialog_btn_cancel, null).show();
     }
     
     private String getStrResId(int strResId) {

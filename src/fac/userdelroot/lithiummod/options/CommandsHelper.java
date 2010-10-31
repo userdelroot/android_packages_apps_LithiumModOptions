@@ -22,11 +22,8 @@ package fac.userdelroot.lithiummod.options;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.widget.Toast;
-
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -218,124 +215,8 @@ public class CommandsHelper {
      * @param block
      * @param c
      */
-    public static void blockAds(final boolean block, final Context c) {
-
-        Thread t = new Thread() {
-
-            File tmp = null;
-            File hosts = null;            
-            File ads = null;
-
-            InputStream is = null;
-
-            FileOutputStream fos = null;
-
-            OutputStreamWriter osw = null;
-
-            Process p = null;
-
-            DataOutputStream stdout = null;
+    public static void blockAds(final boolean block, final Context c, ifaceStdio stdio) {
 
 
-            @Override
-            public void run() {
-
-                // only do this if file does not exist already
-                ads = new File(BLOCK_ADS);
-                try {
-
-                    // get root access
-                    p = Runtime.getRuntime().exec("su");
-                    stdout = new DataOutputStream(p.getOutputStream());
-
-                    // mount read/write
-                    stdout.writeBytes("busybox mount -o remount,rw /system\n");
-                    stdout.flush();
-                    
-                    if (!ads.exists()) {
-                        tmp = new File(BLOCK_ADS_TEMP);
-                        
-                        // write the asset file out to /system/adblock.disabled
-                        is = c.getAssets().open(ASSET_BLOCK_ADS);
-                        fos = new FileOutputStream(tmp);
-                        osw = new OutputStreamWriter(fos);
-
-                        int nextChar;
-
-                        while ((nextChar = is.read()) != -1) {
-                            osw.write(nextChar);
-                            osw.flush();
-                        }
-
-                        // Close the streams
-                        is.close();
-                        fos.close();
-                        osw.close();
-                        
-                        // place current hosts file to top of ads host file
-                        stdout.writeBytes("busybox cat " + HOSTS_FILE + " | cat - " + BLOCK_ADS_TEMP + " > " + BLOCK_ADS + "\n");
-                        stdout.flush();
-
-                       
-                    
-                        // backup original hosts file
-                        hosts = new File(HOSTS_FILE_ORIG);
-                        if (!hosts.exists()) {
-                            stdout.writeBytes("busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + "\n");
-                            stdout.flush();
-                        }
-                    
-                    }
-
-                    // at this point we should have all files in place.
-        
-                    // block or unblock adds
-                    if (block) {
-                        stdout.writeBytes("busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + "\n");
-                        stdout.flush();
-                        Log.i(TAG + "block ads " + block);
-                        
-                    }
-                    else {
-                        stdout.writeBytes("busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + "\n");
-                        stdout.flush();
-                        Log.i(TAG + "block ads " + block);
-                    }
-
-                    Thread.sleep(500);
-                    // mount read-only
-                    stdout.writeBytes("busybox mount -o remount,ro /system\n");
-                    stdout.flush();
-                    stdout.writeBytes("exit\n");
-                    stdout.flush();
-                    stdout.close();
-                    ads = null;
-                
-                } catch (IOException e) {
-                    if (Log.LOGV)
-                        Log.e(TAG + "IOException: " + e.getLocalizedMessage());
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                finally {
-                    if (p != null)
-                        p.destroy();
-                }
-                
-                myHandler.handleMessage(myHandler.obtainMessage());
-            }
-
-        };
-        t.start();
     }
-    
-    
-    static Handler myHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            Options.dismissProgressDialog();
-        }
-    };
 }

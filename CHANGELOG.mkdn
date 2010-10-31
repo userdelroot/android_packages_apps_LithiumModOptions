@@ -1,4 +1,33 @@
+2010-10-31  userdelroot <r00t316@gmail.com>
+
+  * .../userdelroot/lithiummod/options/BlockAds.java,
+  .../lithiummod/options/ErrorStreamHelper.java,
+  .../lithiummod/options/InputStreamHelper.java,
+  .../lithiummod/options/OutputStreamHelper.java,
+  .../userdelroot/lithiummod/options/ifaceStdio.java: created a seperate blocks
+  ads class.  Also created Helper classes for the streams which makes things
+  must similar
+
+  * .../userdelroot/lithiummod/options/Options.java: fixed code to work with
+  BlockAds class
+
+  * src/fac/userdelroot/lithiummod/options/Log.java: changed code a lil for
+  less typing when I need log statemtnts
+
+  * .../lithiummod/options/CommandsHelper.java: removed blockads helper
+
+  * .../userdelroot/lithiummod/options/LCDDensity.java: removed some unneded
+  logging
+
+  * res/values/strings.xml: added a string
+
+2010-10-30  userdelroot <r00t316@gmail.com>
+
+  * : blocking ads host file
+
 2010-10-29  userdelroot <r00t316@gmail.com>
+
+  * CHANGELOG.mkdn: updated
 
   * .../userdelroot/lithiummod/options/Options.java: added block ads support
 

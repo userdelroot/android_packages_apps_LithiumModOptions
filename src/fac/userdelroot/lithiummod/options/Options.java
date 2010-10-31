@@ -38,9 +38,6 @@ import android.os.Bundle;
  */
 public class Options extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-
-    private static final String VERSION = "0.1-alpha";
-    
     private static final String TAG = "Options ";
     private static Context mContext;
     private LCDDensity mLcdDensity;
@@ -60,6 +57,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final int BASHENV = 2;
     private static final int BLOCKADS = 3;
     private String mTmpString;
+    private boolean mBlockAdsSuccess;
     
     
     @Override
@@ -67,7 +65,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.options);
-
         mTmpString = "";
         mLcdDensity = new LCDDensity();
         mContext = getApplicationContext();
@@ -101,7 +98,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
              * If build.prop and LM do not match use the build.prop lcd_density
              */
             if (mLcdDensity != null) {
-                Log.i(TAG + "getbuildproplcddensity");
                 propval = mLcdDensity.getBuildPropLcdDensity();
                 if (propval != val || propval < 0) {
 
@@ -194,7 +190,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             mBlockAds.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
             mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
             prepareLcdDensityChange(BLOCKADS, R.string.loading_please_wait);
-            CommandsHelper.blockAds(val, mContext);
+            BlockAds ba = new BlockAds(val, mContext, myStdio);
+            ba.start();
             return;
         }
     }
@@ -262,6 +259,10 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 break;
                 
             case BLOCKADS:
+                if (!mBlockAdsSuccess) {
+                    Toast.makeText(mContext, R.string.process_failure, Toast.LENGTH_LONG).show();
+                    return;
+                }
                 title = R.string.block_ads_success;
                 msg = R.string.reboot_required_msg;
                 break;
@@ -306,5 +307,26 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
                 this);
     }
+    
+    ifaceStdio myStdio = new ifaceStdio() {
 
+        @Override
+        public void setStdErr(String err) {
+        }
+
+        @Override
+        public void setStdOut(String out) {
+        }
+
+        @Override
+        public void setExitStatus(int code) {
+        }
+
+        @Override
+        public void setIsSuccess(boolean success) {
+            mBlockAdsSuccess = success;
+        }
+        
+    };
 }
+

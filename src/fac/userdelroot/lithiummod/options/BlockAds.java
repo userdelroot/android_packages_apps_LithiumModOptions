@@ -60,7 +60,7 @@ public class BlockAds extends Thread {
 
    private void cleanUp() {
         systemRO();
-        
+        mStdio.setIsSuccess(isSuccess);
         myHandler.handleMessage(myHandler.obtainMessage());
         destroy = null;
     }
@@ -108,7 +108,7 @@ public class BlockAds extends Thread {
 
             // block the ads
             blockAds();
-            mStdio.setIsSuccess(isSuccess);
+            
             cleanUp();
 
         }

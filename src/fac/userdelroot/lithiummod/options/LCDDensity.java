@@ -108,9 +108,6 @@ public class LCDDensity {
                 p.destroy();
         }
         
-        if (Log.LOGV)
-            Log.v(TAG + "getBuildPropDensity() " + cur);
-        
         return cur;
     }
 

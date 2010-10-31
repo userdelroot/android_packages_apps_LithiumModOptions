@@ -24,13 +24,14 @@
 <string name="lm_disabled">Disabled</string>
 <string name="lm_options_title">LithiumMod Options</string>
 <string name="dialog_btn_reboot">Yes</string>
-<string name="dialog_btn_cancel">Cancel</string>
+<string name="dialog_btn_cancel">No</string>
 <string name="format_summary_current">Current: <xliff:g id="value">%s</xliff:g></string>
 <string name="loading_please_wait">Loading please wait..</string>
 <string name="external_storage_umounted">External Storage not mounted!</string>
 <string name="file_not_writeable">Failed: File not writable</string>
 <string name="unknown_failure">Unknown Failure</string>
 <string name="reboot_required_msg">Reboot is required. Reboot now?</string>
+<string name="process_failure">Failure</string>
 <!-- end -->
 
 <string name="lcd_density_title">LCD Density</string>

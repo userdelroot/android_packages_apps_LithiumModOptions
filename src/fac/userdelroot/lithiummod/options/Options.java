@@ -190,8 +190,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             mBlockAds.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
             mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
             prepareLcdDensityChange(BLOCKADS, R.string.loading_please_wait);
-            BlockAds ba = new BlockAds(val, mContext, myStdio);
-            ba.start();
+           new BlockAds(val, mContext, myStdio).start();
+           // ba.start();
             return;
         }
     }

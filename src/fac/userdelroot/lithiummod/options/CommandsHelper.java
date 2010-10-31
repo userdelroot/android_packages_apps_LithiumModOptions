@@ -17,12 +17,9 @@
  * 
  */
 
-
 package fac.userdelroot.lithiummod.options;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.widget.Toast;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,20 +40,15 @@ public class CommandsHelper {
     private static final String BASH_RC = "/mnt/sdcard/.bashrc";
     private static final String BASH_ALIASES = "/mnt/sdcard/.bash_aliases";
     private static final String BASH_BIN = "/mnt/sdcard/bin";
-    private static final String HOSTS_FILE = "/system/etc/hosts";
-    private static final String HOSTS_FILE_ORIG = "/system/etc/hosts.orig.lm";
-    private static final String BLOCK_ADS = "/system/etc/adblock.hosts.lm";
-    private static final String BLOCK_ADS_TEMP = "/mnt/sdcard/adblock.lithium";
     
     private static final String ASSET_BASH_RC = "bashrc";
     private static final String ASSET_BASH_ALIASES = "bash_aliases";
-    private static final String ASSET_BLOCK_ADS = "hosts.adblocking";
     
     /**
      * Reboot the device, pretty simple
      * Requires: root
      */
-    public static void reboot() {
+    public static final void reboot() {
 
         Process p = null;
         
@@ -208,15 +200,5 @@ public class CommandsHelper {
             ofile.mkdir();
         }
         writeBashAliases(c);
-    }
-
-    /**
-     * block ads hosts file Requires: root
-     * @param block
-     * @param c
-     */
-    public static void blockAds(final boolean block, final Context c, ifaceStdio stdio) {
-
-
     }
 }

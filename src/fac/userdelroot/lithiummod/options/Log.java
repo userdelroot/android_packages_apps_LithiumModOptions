@@ -25,25 +25,30 @@ package fac.userdelroot.lithiummod.options;
 final class Log {
 	public final static String LOGTAG = "LithiumModOptions";
 
-	static final boolean LOGV = true;
+	static final boolean LOGV = false;
 
 	static final void v(String logMe) {
-		android.util.Log.v(LOGTAG, logMe);
+	    if (LOGV)
+	        android.util.Log.v(LOGTAG, logMe);
 	}
 
 	static final void e(String logMe) {
-		android.util.Log.e(LOGTAG, logMe);
+	    if (LOGV)
+	        android.util.Log.e(LOGTAG, logMe);
 	}
 
 	static final void e(String logMe, Exception ex) {
-		android.util.Log.e(LOGTAG, logMe, ex);
+	    if (LOGV)
+	        android.util.Log.e(LOGTAG, logMe, ex);
 	}
 
 	static final void w(String logMe) {
-		android.util.Log.w(LOGTAG, logMe);
+	    if (LOGV)
+	        android.util.Log.w(LOGTAG, logMe);
 	}
 	
 	static final void i(String logMe) {
-		android.util.Log.i(LOGTAG, logMe);
+	    if (LOGV)
+	        android.util.Log.i(LOGTAG, logMe);
 	}
 }

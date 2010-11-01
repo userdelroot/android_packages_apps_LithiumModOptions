@@ -45,4 +45,5 @@
 <string name="lcd_density_disabled">Disabled missing ro.sf.lcd_density prop.</string>
 <string name="block_ads"><xliff:g id="value">%s</xliff:g> Block Ads</string>
 <string name="block_ads_success">Block Ads change Success!</string>
+<string name="block_ads_failure">Block Ads change failed</string>
 </resources>

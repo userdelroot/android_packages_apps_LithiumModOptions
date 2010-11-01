@@ -1,4 +1,27 @@
+2010-11-01  userdelroot <r00t316@gmail.com>
+
+  * AndroidManifest.xml, .../userdelroot/lithiummod/options/BlockAds.java,
+  .../userdelroot/lithiummod/options/Options.java: fixed bug where thread was
+  looping, and was exiting correctly on error.  Fixed misc code issues
+
+  * res/drawable-hdpi/icon.png, res/drawable-ldpi/icon.png,
+  res/drawable-mdpi/icon.png, res/values/strings.xml: added ronx icons
+
 2010-10-31  userdelroot <r00t316@gmail.com>
+
+  * .../lithiummod/options/OutputStreamHelper.java: removed unused variable
+
+  * .../userdelroot/lithiummod/options/Options.java: minor change for
+  BlockAds() doesn't need a variable
+
+  * .../lithiummod/options/CommandsHelper.java: removed old blockads method
+  added final keyword to reboot
+
+  * .../userdelroot/lithiummod/options/BlockAds.java: minor fix
+
+  * AndroidManifest.xml: change lauchmode to singletask
+
+  * CHANGELOG.mkdn: updated iit log
 
   * .../userdelroot/lithiummod/options/BlockAds.java,
   .../lithiummod/options/ErrorStreamHelper.java,

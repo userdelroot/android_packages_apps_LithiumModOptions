@@ -68,6 +68,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         mTmpString = "";
         mLcdDensity = new LCDDensity();
         mContext = getApplicationContext();
+        mBlockAdsSuccess = false;
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
         mBashEnviro = (CheckBoxPreference) findPreference(BASH_ENVIRO);
@@ -260,7 +261,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 
             case BLOCKADS:
                 if (!mBlockAdsSuccess) {
-                    Toast.makeText(mContext, R.string.process_failure, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.block_ads_failure, Toast.LENGTH_LONG).show();
                     return;
                 }
                 title = R.string.block_ads_success;

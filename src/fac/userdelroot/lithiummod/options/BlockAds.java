@@ -49,28 +49,50 @@ public class BlockAds extends Thread {
     private volatile Thread destroy;
     private ifaceStdio mStdio;
     
+    /**
+     * Constructor
+     * @param block
+     * @param c
+     * @param stdio
+     */
     BlockAds(boolean block, Context c, ifaceStdio stdio) {
         blockAds = block;
-        isSuccess = false;
+        isSuccess = true;
         mContext = c;
         destroy = this;
         this.setName("BlockAds");
         mStdio = stdio;
     }
 
-   private void cleanUp() {
-        systemRO();
+   /**
+    * stops our thread.  Used if there is an error or has finished.
+    */
+    private void cleanUp() {
         mStdio.setIsSuccess(isSuccess);
         myHandler.handleMessage(myHandler.obtainMessage());
+        systemRO();
+        
         destroy = null;
+        isSuccess = false; // need to set this to false
+
     }
    
+   /**
+    * Thread.
+    * This is the recommended way of stopping an active thread as stop() and destroy() are depreciated
+    */
     public void run() {
         Thread mythread = this;
         while (destroy == mythread) {
+
+
+            if (!isSuccess)
+                return;
+            
             File ads = new File(BLOCK_ADS); // this only gets initialized first
                                             // because of a check below.
 
+            
             // mount the /system read/write
             systemRW();
             if (!isSuccess) {
@@ -78,29 +100,23 @@ public class BlockAds extends Thread {
                 cleanUp();
                 return;
             }
-            isSuccess = false;
             // if the ads file exists no need to proceed on building a new
             // one.
             if (!ads.exists()) {
 
                 createBlockAdsTmp();
                 if (!isSuccess) {
-                    cleanUp();
                     return;
                 }
-                isSuccess = false;
 
                 // copy from the sdcard to the /system/etc/
                 copyAdsTmpToLoc();
                 if (!isSuccess) {
-                    cleanUp();
                     return;
                 }
-                isSuccess = false;
 
                 hostsFileBackup();
                 if (!isSuccess) {
-                    cleanUp();
                     return;
 
                 }
@@ -112,8 +128,13 @@ public class BlockAds extends Thread {
             cleanUp();
 
         }
+        
+        
     }
 
+    /**
+     * handler needed to get back to the ui thread
+     */
     Handler myHandler = new Handler() {
 
         @Override
@@ -122,6 +143,10 @@ public class BlockAds extends Thread {
         }
     };
 
+    /**
+     * Creates a temp ads file from an asset on the sdcard
+     * requires write_external_storage in manifest.
+     */
     private void createBlockAdsTmp() {
         File adstmp = new File(BLOCK_ADS_TMP);
 
@@ -142,14 +167,18 @@ public class BlockAds extends Thread {
             is.close();
             fos.close();
             osw.close();
-            isSuccess = true;
+            
         } catch (IOException e) {
-            Log.e(TAG + "createBlockAdsTmp IOException " + e.getLocalizedMessage());
+            Log.e(TAG + "createBlockAdsTmp IOException ", e);
             isSuccess = false;
             cleanUp();
+            return;
         }
     }
 
+    /**
+     * amend hosts into tmp ads write out blockads
+     */
     private void copyAdsTmpToLoc() {
         String cmd = "busybox cat " + HOSTS_FILE + " | cat - " + BLOCK_ADS_TMP + " > " + BLOCK_ADS
                 + " && echo success\n";
@@ -160,21 +189,21 @@ public class BlockAds extends Thread {
         } catch (InterruptedException e) {
             isSuccess = false;
             cleanUp();
+            return;
         }
-        Log.i(TAG + "success:" + isSuccess + "\nexitstatus:" + exitStatus + "\nstdout:" + stdOut
-                + "\nstderror:" + stdError);
-
     }
 
+    /**
+     * backup the original hosts file
+     */
     private void hostsFileBackup() {
 
         File hosts = new File(HOSTS_FILE_ORIG);
         if (hosts.exists()) {
-            isSuccess = true;
             return;
         }
 
-        String cmd = "busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + "&& echo success\n";
+        String cmd = "busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + " && echo success\n";
         try {
             OutputStreamHelper output = new OutputStreamHelper(stdioSetters, cmd);
             output.start();
@@ -182,12 +211,13 @@ public class BlockAds extends Thread {
         } catch (InterruptedException e) {
             isSuccess = false;
             cleanUp();
+            return;
         }
-        Log.i(TAG + "success:" + isSuccess + "\nexitstatus:" + exitStatus + "\nstdout:" + stdOut
-                + "\nstderror:" + stdError);
-
     }
 
+    /**
+     * mount /system read/write
+     */
     private void systemRW() {
 
         String cmd = "busybox mount -o remount,rw /system  && echo success\n";
@@ -196,12 +226,15 @@ public class BlockAds extends Thread {
             output.start();
             output.join();
         } catch (InterruptedException e) {
+            isSuccess = false;
             cleanUp();
+            return;
         }
-        Log.i(TAG + "success:" + isSuccess + "\nexitstatus:" + exitStatus + "\nstdout:"
-                + stdOut + "\nstderror:" + stdError);
     }
 
+    /**
+     * mount system read-only
+     */
     private void systemRO() {
 
         String cmd = "busybox mount -o remount,ro /system  && echo success\n";
@@ -210,17 +243,19 @@ public class BlockAds extends Thread {
             output.start();
             output.join();
         } catch (InterruptedException e) {
+            isSuccess = false;
             cleanUp();
+            return;
         }
-        Log.i(TAG + "success:" + isSuccess + "\nexitstatus:" + exitStatus + "\nstdout:" + stdOut
-                + "\nstderror:" + stdError);
-
     }
 
+    /**
+     * enable / disable block ads
+     */
     private void blockAds() {
-        String cmd = "busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + "&& echo success\n";
+        String cmd = "busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + " && echo success\n";
         if (!blockAds) {
-            cmd = "busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + "&& echo success\n";
+            cmd = "busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + " && echo success\n";
         } 
         
         try {
@@ -229,33 +264,39 @@ public class BlockAds extends Thread {
             output.join();
         } catch (InterruptedException e) {
             Log.e(TAG + e.getLocalizedMessage());
+            isSuccess = false;
             cleanUp();
+            return;
         }
-
-        Log.i(TAG + "success:" + isSuccess + "\nexitstatus:" + exitStatus + "\nstdout:" + stdOut
-                + "\nstderror:" + stdError);
     }
 
+    /**
+     * interface used by other threads when they have finished.
+     */
     ifaceStdio stdioSetters = new ifaceStdio() {
 
         @Override
         public void setStdErr(String err) {
             stdError = err;
+            Log.i(TAG + "stderr:"+ err);
         }
 
         @Override
         public void setStdOut(String out) {
             stdOut = out;
+            Log.i(TAG + "stdout:"+ out);
         }
 
         @Override
         public void setExitStatus(int code) {
             exitStatus = code;
+            Log.i(TAG + "exit status:"+code);
         }
 
         @Override
         public void setIsSuccess(boolean success) {
             isSuccess = success;
+            Log.i(TAG + "isSuccess:" + success);
         }
 
     };

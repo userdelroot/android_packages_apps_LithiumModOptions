@@ -27,7 +27,7 @@ import java.io.InputStreamReader;
 public class ErrorStreamHelper extends Thread {
     
     private static final String TAG = "ErrorStreamHelper ";
-    private static final String CON_STDOUT = "stderr>";
+    private static final String CON_STDERR = "stderr>";
     private InputStream mInputStream;
     private ifaceStdio stdio;
     
@@ -48,6 +48,7 @@ public class ErrorStreamHelper extends Thread {
 
             while ((line = br.readLine()) != null ) {
                 result += line + " ";
+                Log.i(TAG + CON_STDERR + "" + line);
             }            
             
             br.close();

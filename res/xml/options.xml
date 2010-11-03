@@ -21,10 +21,10 @@
   android:title="@string/lm_options_title">
   
   <fac.userdelroot.lithiummod.options.SeekBarPref android:key="lcd_density" android:title="@string/lcd_density_title"
-  android:dialogTitle="@string/lcd_density_dialog_title" />
+  android:dialogTitle="@string/lcd_density_dialog_title"/>
   
   <CheckBoxPreference 
-  	android:key="bash_enviro" />
+  	android:key="bash_enviro" android:title="@string/bash_env_title" />
   	
-  	<CheckBoxPreference android:key="block_ads" />  
+  	<CheckBoxPreference android:key="block_ads" android:title="@string/block_ads_title" />  
 </PreferenceScreen>

@@ -278,25 +278,25 @@ public class BlockAds extends Thread {
         @Override
         public void setStdErr(String err) {
             stdError = err;
-            Log.i(TAG + "stderr:"+ err);
+            Log.i(TAG + "stderr:"+ stdError);
         }
 
         @Override
         public void setStdOut(String out) {
             stdOut = out;
-            Log.i(TAG + "stdout:"+ out);
+            Log.i(TAG + "stdout:"+ stdOut);
         }
 
         @Override
         public void setExitStatus(int code) {
             exitStatus = code;
-            Log.i(TAG + "exit status:"+code);
+            Log.i(TAG + "exit status:"+ exitStatus);
         }
 
         @Override
         public void setIsSuccess(boolean success) {
             isSuccess = success;
-            Log.i(TAG + "isSuccess:" + success);
+            Log.i(TAG + "isSuccess:" + isSuccess);
         }
 
     };

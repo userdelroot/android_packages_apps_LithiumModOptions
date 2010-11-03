@@ -19,7 +19,6 @@
 
 package fac.userdelroot.lithiummod.options;
 
-import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 import android.app.AlertDialog;
@@ -50,13 +49,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
-    private CheckBoxPreference mBashEnviro, mBlockAds;
-    private String mEnabledStr;
-    private String mDisabledStr;
     private static final int LCDDENSITY = 1;
-    private static final int BASHENV = 2;
-    private static final int BLOCKADS = 3;
-    private String mTmpString;
+    private static final int BLOCKADS = 2;
     private boolean mBlockAdsSuccess;
     
     
@@ -65,18 +59,12 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.options);
-        mTmpString = "";
         mLcdDensity = new LCDDensity();
         mContext = getApplicationContext();
         mBlockAdsSuccess = false;
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
-        mBashEnviro = (CheckBoxPreference) findPreference(BASH_ENVIRO);
-        mBlockAds = (CheckBoxPreference) findPreference(BLOCK_ADS);
-        
-        mEnabledStr = getStrResId(R.string.lm_enabled);
-        mDisabledStr = getStrResId(R.string.lm_disabled);
-        
+
         // load sharedpreferences
         loadSharedPreferences();
     }
@@ -89,8 +77,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         try {
             SharedPreferences prefs = this.getSharedPreferences(PREFS_NAME, 0);
             int val = prefs.getInt(LCD_DENSITY, -1);
-            boolean bashenv = prefs.getBoolean(BASH_ENVIRO, false);
-            boolean blockads = prefs.getBoolean(BLOCK_ADS, false);
             int propval = 0;
             
             boolean lcdDisabled = false;
@@ -139,12 +125,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 str = getStrResId(R.string.format_summary_current);
                 mDensitySeekBarPref.setSummary(String.format(str, val));
             }
-           
-            str = getStrResId(R.string.bash_enviro_title);
-            mBashEnviro.setTitle(String.format(str, (bashenv == true) ? mDisabledStr : mEnabledStr ));
-
-            str = getStrResId(R.string.block_ads);
-            mBlockAds.setTitle(String.format(str, (blockads == true) ? mDisabledStr : mEnabledStr));
         }
         catch (NullPointerException e) {
             // do nothing
@@ -177,19 +157,13 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         
         if (key.equals(BASH_ENVIRO)) {
            boolean val = sharedPrefs.getBoolean(BASH_ENVIRO, false);
-           String str = mContext.getResources().getString(R.string.bash_enviro_title);
-           mBashEnviro.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
-           mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
-           prepareLcdDensityChange(BASHENV, R.string.loading_please_wait);
+           prepareLcdDensityChange(-1, R.string.loading_please_wait);
            CommandsHelper.bashEnv(val, mContext);
            return;
         }
         
         if (key.equals(BLOCK_ADS)) {
             boolean val = sharedPrefs.getBoolean(BLOCK_ADS, false);
-            String str = mContext.getResources().getString(R.string.block_ads);
-            mBlockAds.setTitle(String.format(str, (val == true) ? mDisabledStr : mEnabledStr));
-            mTmpString = (val == true) ? mEnabledStr : mDisabledStr;
             prepareLcdDensityChange(BLOCKADS, R.string.loading_please_wait);
            new BlockAds(val, mContext, myStdio).start();
            // ba.start();
@@ -215,11 +189,6 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                         showRebootDialog(LCDDENSITY);
                         break;
                     
-                    case BASHENV:
-                        String str = mContext.getString(R.string.bash_env_setup_completed);
-                        if (mTmpString != null)
-                            Toast.makeText(mContext, String.format(str, mTmpString), Toast.LENGTH_LONG).show();
-                        break;
                     case BLOCKADS:
                         showRebootDialog(BLOCKADS);
                     default:
@@ -255,7 +224,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                     return;
                 }
                 
-                title = R.string.lcd_density_dialog_title_reboot;
+                title = R.string.lcd_density_dialog_reboot_title;
                 msg = R.string.reboot_required_msg;
                 break;
                 
@@ -264,7 +233,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                     Toast.makeText(mContext, R.string.block_ads_failure, Toast.LENGTH_LONG).show();
                     return;
                 }
-                title = R.string.block_ads_success;
+                title = R.string.block_ads_dialog_reboot_title;
                 msg = R.string.reboot_required_msg;
                 break;
                 

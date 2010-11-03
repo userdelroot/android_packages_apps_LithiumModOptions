@@ -55,6 +55,7 @@ public class InputStreamHelper extends Thread {
 
             while ((line = br.readLine()) != null) {
                 result += line + " ";
+                Log.i(TAG + CON_STDOUT+""+line);
             }
 
             br.close();

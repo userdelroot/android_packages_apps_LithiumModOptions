@@ -20,8 +20,8 @@
     
 <!-- Common -->
 <string name="app_name">LithiumMod Options</string>
-<string name="lm_enabled">Enabled</string>
-<string name="lm_disabled">Disabled</string>
+<string name="lm_enabled">Enable</string>
+<string name="lm_disabled">Disable</string>
 <string name="lm_options_title">LithiumMod Options</string>
 <string name="dialog_btn_reboot">Yes</string>
 <string name="dialog_btn_cancel">No</string>
@@ -32,18 +32,18 @@
 <string name="unknown_failure">Unknown Failure</string>
 <string name="reboot_required_msg">Reboot is required. Reboot now?</string>
 <string name="process_failure">Failure</string>
+<string name="change_success">Change Successful!</string>
 <!-- end -->
 
 <string name="lcd_density_title">LCD Density</string>
 <string name="lcd_density_dialog_title">Select LCD Density</string>
-<string name="lcd_density_change_success">LCD Density has been changed successfully. </string>
 <string name="lcd_density_change_failure">LCD Density change failed.</string>
-<string name="lcd_density_dialog_title_reboot">LCD Density change Success!</string>
-<string name="bash_enviro_title"><xliff:g id="value">%s</xliff:g> Bash Env</string>
-<string name="bash_env_setup_completed">Bash Env <xliff:g id="value">%s</xliff:g> successfully</string>
+<string name="lcd_density_dialog_reboot_title">LCD Density changed</string>
+<string name="bash_env_title">Bash Environment</string>
+<string name="bash_env_failure">Bash Environment failed!</string>
 <string name="lcd_density_prop_missing">Your build.prop is missing:\n\n\tro.sf.lcd_density\n\nLCD Density will be disabled</string>
 <string name="lcd_density_disabled">Disabled missing ro.sf.lcd_density prop.</string>
-<string name="block_ads"><xliff:g id="value">%s</xliff:g> Block Ads</string>
-<string name="block_ads_success">Block Ads change Success!</string>
-<string name="block_ads_failure">Block Ads change failed</string>
+<string name="block_ads_failure">Block Ads failed!</string>
+<string name="block_ads_title">Block Ads</string>
+<string name="block_ads_dialog_reboot_title">Block Ads changed</string>
 </resources>

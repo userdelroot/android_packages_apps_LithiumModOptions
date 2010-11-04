@@ -23,6 +23,6 @@
 
 <!-- Required to be able to write to sdcard without root perms  -->
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+	<uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
 </manifest> 

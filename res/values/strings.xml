@@ -46,4 +46,6 @@
 <string name="block_ads_failure">Block Ads failed!</string>
 <string name="block_ads_title">Block Ads</string>
 <string name="block_ads_dialog_reboot_title">Block Ads changed</string>
+<string name="dock_desk_title">Dock Desk</string>
+<string name="dock_car_title">Dock Car</string>
 </resources>

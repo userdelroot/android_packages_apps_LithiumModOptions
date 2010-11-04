@@ -19,13 +19,17 @@
 
 package fac.userdelroot.lithiummod.options;
 
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 import android.widget.Toast;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -35,7 +39,7 @@ import android.os.Bundle;
  * 
  * @author userdelroot Oct 26, 2010
  */
-public class Options extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+public class Options extends PreferenceActivity implements OnSharedPreferenceChangeListener, OnPreferenceClickListener {
 
     private static final String TAG = "Options ";
     private static Context mContext;
@@ -46,12 +50,21 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final String LCD_DENSITY = "lcd_density";
     private static final String BASH_ENVIRO = "bash_enviro";
     private static final String BLOCK_ADS = "block_ads";
+    private static final String DOCK_DESK = "dock_desk";
+    private static final String DOCK_CAR = "dock_car";
+    
+    private static final String DOCK_STATE = "android.intent.extra.DOCK_STATE";
+    private static final String DOCK_EVENT = "android.intent.extra.DOCK_EVENT";
+    private static final String ANDROID_MAIN = "android.intent.action.MAIN";
     
     private static ProgressDialog mProgressDialog;
     private SeekBarPref mDensitySeekBarPref;
     private static final int LCDDENSITY = 1;
     private static final int BLOCKADS = 2;
     private boolean mBlockAdsSuccess;
+    
+    
+    private PreferenceScreen mDockDesk, mDockCar;
     
     
     @Override
@@ -65,6 +78,9 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
 
+        mDockDesk = (PreferenceScreen) findPreference(DOCK_DESK);
+        mDockCar = (PreferenceScreen) findPreference(DOCK_CAR);
+        
         // load sharedpreferences
         loadSharedPreferences();
     }
@@ -267,7 +283,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         super.onResume();
 
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        
+        mDockDesk.setOnPreferenceClickListener(this);
+        mDockCar.setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -276,7 +293,68 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
 
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(
                 this);
+        
+        mDockDesk.setOnPreferenceClickListener(null);
+        mDockCar.setOnPreferenceClickListener(null);
     }
+    
+    
+    private void dockDesk(boolean docked) {
+
+        try {
+            
+            if (!docked) {
+                Intent dockIntent = new Intent(DOCK_EVENT);
+                dockIntent.putExtra(DOCK_STATE, 0);
+                getBaseContext().sendStickyBroadcast(dockIntent);
+                Log.i(TAG + "dockDesk() DockDesk off");
+                return;
+            }
+
+            Intent dockIntent = new Intent(DOCK_EVENT);
+            dockIntent.putExtra(DOCK_STATE, 1);
+            getBaseContext().sendStickyBroadcast(dockIntent);
+            Intent intent = new Intent(ANDROID_MAIN);
+            intent.addCategory("android.intent.category.DESK_DOCK");
+            intent.addCategory("android.intent.category.DEFAULT");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getBaseContext().startActivity(intent);
+            Log.i(TAG + "dockDesk() DockDesk on");
+            return;
+        } catch (Exception e) {
+            Log.e(TAG + "dockDesk()", e);
+        }
+    }
+
+    private void dockCar(boolean docked) {
+
+        try {
+            if (!docked) {
+
+                Intent dockIntent = new Intent(DOCK_EVENT);
+                dockIntent.putExtra(DOCK_STATE, 0);
+                getBaseContext().sendStickyBroadcast(dockIntent);
+                // getBaseContext().startActivity(dockIntent);
+                Log.i(TAG + "dockCar() Docking off");
+                return;
+            }
+
+            Intent dockIntent = new Intent(DOCK_EVENT);
+            dockIntent.putExtra(DOCK_STATE, 2);
+            getBaseContext().sendStickyBroadcast(dockIntent);
+            // getBaseContext().startActivity(dockIntent);
+            Intent intent = new Intent(ANDROID_MAIN);
+            intent.addCategory("android.intent.category.CAR_DOCK");
+            intent.addCategory("android.intent.category.DEFAULT");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getBaseContext().startActivity(intent);
+            Log.i(TAG + "dockCar() Docking on");
+            return;
+        } catch (Exception e) {
+            Log.e(TAG + "dockCar()", e);
+        }
+    }
+    
     
     ifaceStdio myStdio = new ifaceStdio() {
 
@@ -298,5 +376,24 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         }
         
     };
+
+
+    @Override
+    public boolean onPreferenceClick(Preference pref) {
+        
+        if (pref == mDockDesk) {
+            
+            dockDesk(true);
+            
+            return true;
+        }
+        if (pref == mDockCar) {
+            dockCar(true);
+            return true;
+        }
+            
+        
+        return false;
+    }
 }
 

@@ -26,5 +26,8 @@
   <CheckBoxPreference 
   	android:key="bash_enviro" android:title="@string/bash_env_title" />
   	
-  	<CheckBoxPreference android:key="block_ads" android:title="@string/block_ads_title" />  
+  	<CheckBoxPreference android:key="block_ads" android:title="@string/block_ads_title" />
+  	
+  	<PreferenceScreen android:key="dock_desk" android:title="@string/dock_desk_title" />  
+  	<PreferenceScreen android:key="dock_car" android:title="@string/dock_car_title" />  
 </PreferenceScreen>

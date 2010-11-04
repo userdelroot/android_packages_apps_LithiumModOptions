@@ -154,12 +154,12 @@ public class LCDDensity {
 
                     // this is a little easier to read then one long ass string
                     // minor change to regexp to grab everything after density.*
-                    String str1 = "busybox cat /system/build.prop |";
-                    String str2 = " sed -e 's:ro.sf.lcd_density.*:ro.sf.lcd_density="+density+":g' ";
-                    String str3 = "> /data/local/tmp/build.prop.new\n";
-                    String command = str1 + str2 + str3;
+					StringBuilder command = new StringBuilder();
+                    command.append("busybox cat /system/build.prop |");
+                    command.append(" sed -e 's:ro.sf.lcd_density.*:ro.sf.lcd_density="+density+":g' ");
+                    command.append("> /data/local/tmp/build.prop.new\n");
                     // do some crazy sed stuff
-                    stdout.writeBytes(command);
+                    stdout.writeBytes(command.toString());
                     stdout.flush();
 
                     // remount filesystem read/write

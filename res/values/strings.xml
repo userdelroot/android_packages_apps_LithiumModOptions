@@ -30,9 +30,10 @@
 <string name="external_storage_umounted">External Storage not mounted!</string>
 <string name="file_not_writeable">Failed: File not writable</string>
 <string name="unknown_failure">Unknown Failure</string>
-<string name="reboot_required_msg">Reboot is required. Reboot now?</string>
+<string name="reboot_required_msg">Reboot is required.\nReboot now?</string>
 <string name="process_failure">Failure</string>
 <string name="change_success">Change Successful!</string>
+<string name="lm_tweaks">Tweaks</string>
 <!-- end -->
 
 <string name="lcd_density_title">LCD Density</string>
@@ -48,4 +49,7 @@
 <string name="block_ads_dialog_reboot_title">Block Ads changed</string>
 <string name="dock_desk_title">Dock Desk</string>
 <string name="dock_car_title">Dock Car</string>
+<string name="jit_compiler">JIT Compiler</string>
+<string name="jit_failure">Unable to change JIT options</string>
+<string name="jit_compiler_dialog_reboot_title">JIT options changed</string>
 </resources>

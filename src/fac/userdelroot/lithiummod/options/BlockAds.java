@@ -181,7 +181,7 @@ public class BlockAds extends Thread {
      */
     private void copyAdsTmpToLoc() {
         String cmd = "busybox cat " + HOSTS_FILE + " | cat - " + BLOCK_ADS_TMP + " > " + BLOCK_ADS
-                + " && echo success\n";
+                + " || echo failure\n";
         try {
             OutputStreamHelper output = new OutputStreamHelper(stdioSetters, cmd);
             output.start();
@@ -203,7 +203,7 @@ public class BlockAds extends Thread {
             return;
         }
 
-        String cmd = "busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + " && echo success\n";
+        String cmd = "busybox cp " + HOSTS_FILE + " " + HOSTS_FILE_ORIG + " || echo failure\n";
         try {
             OutputStreamHelper output = new OutputStreamHelper(stdioSetters, cmd);
             output.start();
@@ -220,7 +220,7 @@ public class BlockAds extends Thread {
      */
     private void systemRW() {
 
-        String cmd = "busybox mount -o remount,rw /system  && echo success\n";
+        String cmd = "busybox mount -o remount,rw /system  || echo failure\n";
         try {
             OutputStreamHelper output = new OutputStreamHelper(stdioSetters, cmd);
             output.start();
@@ -237,7 +237,7 @@ public class BlockAds extends Thread {
      */
     private void systemRO() {
 
-        String cmd = "busybox mount -o remount,ro /system  && echo success\n";
+        String cmd = "busybox mount -o remount,ro /system || echo failure\n";
         try {
             OutputStreamHelper output = new OutputStreamHelper(stdioSetters, cmd);
             output.start();
@@ -253,9 +253,9 @@ public class BlockAds extends Thread {
      * enable / disable block ads
      */
     private void blockAds() {
-        String cmd = "busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + " && echo success\n";
+        String cmd = "busybox cp " + BLOCK_ADS + " " + HOSTS_FILE + " || echo failure\n";
         if (!blockAds) {
-            cmd = "busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + " && echo success\n";
+            cmd = "busybox cp " + HOSTS_FILE_ORIG + " " + HOSTS_FILE + " || echo failure\n";
         } 
         
         try {

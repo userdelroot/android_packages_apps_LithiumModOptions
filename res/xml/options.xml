@@ -20,9 +20,6 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:title="@string/lm_options_title">
   
-  <fac.userdelroot.lithiummod.options.SeekBarPref android:key="lcd_density" android:title="@string/lcd_density_title"
-  android:dialogTitle="@string/lcd_density_dialog_title"/>
-  
   <CheckBoxPreference 
   	android:key="bash_enviro" android:title="@string/bash_env_title" />
   	
@@ -30,4 +27,10 @@
   	
   	<PreferenceScreen android:key="dock_desk" android:title="@string/dock_desk_title" />  
   	<PreferenceScreen android:key="dock_car" android:title="@string/dock_car_title" />  
+  	
+  	<PreferenceCategory android:title="@string/lm_tweaks">
+  	  <fac.userdelroot.lithiummod.options.SeekBarPref android:key="lcd_density" android:title="@string/lcd_density_title"
+  													  android:dialogTitle="@string/lcd_density_dialog_title"/>
+  	<CheckBoxPreference android:key="jit_compiler" android:title="@string/jit_compiler" />
+  	</PreferenceCategory>
 </PreferenceScreen>

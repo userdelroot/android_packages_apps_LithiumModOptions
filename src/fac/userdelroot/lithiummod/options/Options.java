@@ -52,6 +52,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final String BLOCK_ADS = "block_ads";
     private static final String DOCK_DESK = "dock_desk";
     private static final String DOCK_CAR = "dock_car";
+    private static final String JIT_COMPILER = "jit_compiler";
     
     private static final String DOCK_STATE = "android.intent.extra.DOCK_STATE";
     private static final String DOCK_EVENT = "android.intent.extra.DOCK_EVENT";
@@ -61,7 +62,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private SeekBarPref mDensitySeekBarPref;
     private static final int LCDDENSITY = 1;
     private static final int BLOCKADS = 2;
-    private boolean mBlockAdsSuccess;
+    private static final int JITCOMPILER = 3;
+    private boolean miFaceSuccess;
     
     
     private PreferenceScreen mDockDesk, mDockCar;
@@ -74,7 +76,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
         addPreferencesFromResource(R.xml.options);
         mLcdDensity = new LCDDensity();
         mContext = getApplicationContext();
-        mBlockAdsSuccess = false;
+        miFaceSuccess = false;
         
         mDensitySeekBarPref = (SeekBarPref) findPreference(LCD_DENSITY);
 
@@ -166,28 +168,35 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 return;
             }
             
-            prepareLcdDensityChange(LCDDENSITY,R.string.loading_please_wait);
+            prepareProgressBar(LCDDENSITY,R.string.loading_please_wait);
             mLcdDensity.setPhoneDensity(val);
             return;
         }
         
         if (key.equals(BASH_ENVIRO)) {
            boolean val = sharedPrefs.getBoolean(BASH_ENVIRO, false);
-           prepareLcdDensityChange(-1, R.string.loading_please_wait);
+           prepareProgressBar(-1, R.string.loading_please_wait);
            CommandsHelper.bashEnv(val, mContext);
            return;
         }
         
         if (key.equals(BLOCK_ADS)) {
             boolean val = sharedPrefs.getBoolean(BLOCK_ADS, false);
-            prepareLcdDensityChange(BLOCKADS, R.string.loading_please_wait);
+            prepareProgressBar(BLOCKADS, R.string.loading_please_wait);
            new BlockAds(val, mContext, myStdio).start();
            // ba.start();
             return;
         }
+        
+        if (key.equals(JIT_COMPILER)) {
+            boolean val = sharedPrefs.getBoolean(JIT_COMPILER, false);
+            prepareProgressBar(JITCOMPILER, R.string.loading_please_wait);
+            new JitCompiler(val, mContext, myStdio).start();
+            return;
+        }
     }
 
-    private void prepareLcdDensityChange(final int which, int resId) {
+    private void prepareProgressBar(final int which, int resId) {
         
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -207,6 +216,11 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                     
                     case BLOCKADS:
                         showRebootDialog(BLOCKADS);
+                        break;
+                        
+                    case JITCOMPILER:
+                        showRebootDialog(JITCOMPILER);
+                        break;
                     default:
                         break;
                 }
@@ -245,12 +259,28 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
                 break;
                 
             case BLOCKADS:
-                if (!mBlockAdsSuccess) {
+                if (!miFaceSuccess) {
                     Toast.makeText(mContext, R.string.block_ads_failure, Toast.LENGTH_LONG).show();
                     return;
                 }
                 title = R.string.block_ads_dialog_reboot_title;
                 msg = R.string.reboot_required_msg;
+                
+                // reset this as it gets used other places
+                miFaceSuccess = false;
+                break;
+                
+            case JITCOMPILER:
+                if (!miFaceSuccess) {
+                    Toast.makeText(mContext, R.string.jit_failure, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                
+                title = R.string.jit_compiler_dialog_reboot_title;
+                msg = R.string.reboot_required_msg;
+                
+                // reset this as it gets used other places
+                miFaceSuccess = false;
                 break;
                 
             default:
@@ -372,7 +402,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
 
         @Override
         public void setIsSuccess(boolean success) {
-            mBlockAdsSuccess = success;
+            miFaceSuccess = success;
         }
         
     };

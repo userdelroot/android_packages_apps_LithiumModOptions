@@ -61,26 +61,27 @@ public class InputStreamHelper extends Thread {
             br.close();
             mInputStream.close();
  
-            if (stdio != null) {
+ /*           if (stdio != null) {
                 
                 stdio.setStdOut(result);
-                if (!result.contains("success")) {
+                if (!result.contains("failure")) {
                     stdio.setIsSuccess(false);
                 }
                 else 
                     stdio.setIsSuccess(true);
-            }
+            }*/
         } 
         catch (IOException e) {
             Log.e(TAG + "run()>" + e.getLocalizedMessage());
         } finally {
+            
             stdio.setStdOut(result);
-            if (result.contains("success")) {
+            if (result.contains("failure")) {
 
-                stdio.setIsSuccess(true);
+                stdio.setIsSuccess(false);
             }
             else
-                stdio.setIsSuccess(false);
+                stdio.setIsSuccess(true);
         }
     }
 }

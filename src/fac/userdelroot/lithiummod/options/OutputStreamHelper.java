@@ -73,8 +73,9 @@ public class OutputStreamHelper extends Thread {
         }
         finally {
             
+            Log.i(TAG + "command>"+mCommand);
             stdio.setStdErr(StdErr);
-            stdio.setStdOut(StdOut + "\ncommand>" + mCommand);
+            stdio.setStdOut(StdOut);
             stdio.setExitStatus(exitStatus);
             stdio.setIsSuccess(isSuccess);
             

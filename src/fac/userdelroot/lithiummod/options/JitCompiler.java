@@ -9,7 +9,7 @@ import java.io.File;
 public class JitCompiler extends Thread {
 
     private static final String TAG = "JitCompiler ";
-    private boolean mEnabled;
+    private boolean mDisabled;
     private ifaceStdio mIfaceStdio;
     private volatile Thread destroy;
     private boolean isSuccess;
@@ -17,7 +17,7 @@ public class JitCompiler extends Thread {
 
     
     JitCompiler(boolean enable, Context c, ifaceStdio stdio) {
-        mEnabled = enable;
+        mDisabled = enable;
         mIfaceStdio = stdio;
         destroy = this;
         isSuccess = true;
@@ -136,10 +136,10 @@ public class JitCompiler extends Thread {
          
         
       
-         String enabled = (!mEnabled) ? "fast" : "jit";
+         String disable = (!mDisabled) ? "jit" : "fast";
          StringBuilder cmd = new StringBuilder();
          cmd.append("busybox cat /system/build.prop | sed -e 's/dalvik.vm.execution-mode.*");
-         cmd.append("/dalvik.vm.execution-mode=int:"+enabled);
+         cmd.append("/dalvik.vm.execution-mode=int:"+disable);
          cmd.append("/g' > /data/local/tmp/build.prop.temp || echo failure\n");
          
          try {
@@ -158,7 +158,7 @@ public class JitCompiler extends Thread {
       */
      private void addProp() {
          
-         String str = (!mEnabled) ? "fast" : "jit";
+         String str = (!mDisabled) ? "jit" : "fast";
          
          String cmd = "busybox echo dalvik.vm.execution-mode=int:"+str+" | cat - /system/build.prop > /data/local/tmp/build.prop.temp || echo failure\n";
          

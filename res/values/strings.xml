@@ -49,7 +49,7 @@
 <string name="block_ads_dialog_reboot_title">Block Ads changed</string>
 <string name="dock_desk_title">Dock Desk</string>
 <string name="dock_car_title">Dock Car</string>
-<string name="jit_compiler">JIT Compiler</string>
+<string name="jit_compiler">Disable JIT</string>
 <string name="jit_failure">Unable to change JIT options</string>
 <string name="jit_compiler_dialog_reboot_title">JIT options changed</string>
 </resources>

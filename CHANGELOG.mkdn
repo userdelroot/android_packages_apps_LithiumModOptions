@@ -1,4 +1,58 @@
+2010-11-11  userdelroot <r00t316@gmail.com>
+
+  * .../lithiummod/options/JitCompiler.java: Jit compiler code
+
+  * .../lithiummod/options/OutputStreamHelper.java: removed some debug info
+
+  * .../userdelroot/lithiummod/options/Options.java: added jit compiler
+  options. also redid some variables and misc code changes
+
+  * .../lithiummod/options/InputStreamHelper.java: code reworked to check for
+  failure
+
+  * .../userdelroot/lithiummod/options/BlockAds.java: re-did code so we get
+  notified on failures only
+
+  * res/xml/options.xml: added the jitcompiler option, and a category for
+  tweaks
+
+  * res/values/strings.xml: added newline for dialog
+
+2010-11-04  Nathan Forbes <sforbes41@gmail.com>
+
+  * .../userdelroot/lithiummod/options/LCDDensity.java: Use StringBuilder()
+
+2010-11-04  userdelroot <r00t316@gmail.com>
+
+  * .../userdelroot/lithiummod/options/Options.java: added code for dock desk /
+  car
+
+  * res/xml/options.xml: added clickables for dockdesk / dockcar
+
+  * res/values/strings.xml: strings added for docking
+
+  * AndroidManifest.xml: added persmissions for sticky broadcast
+
+2010-11-03  userdelroot <r00t316@gmail.com>
+
+  * .../lithiummod/options/InputStreamHelper.java,
+  .../lithiummod/options/OutputStreamHelper.java: fixed warnings only
+
+  * .../userdelroot/lithiummod/options/Options.java: removed dynamic text code
+  for blockads and bash env, and made them static
+
+  * .../lithiummod/options/ErrorStreamHelper.java: fixed warnings only
+
+  * .../userdelroot/lithiummod/options/BlockAds.java: warnings corrected only
+
+  * res/xml/options.xml: added the titles for ads and enviroment
+
+  * res/values/strings.xml: removed unused strings, and added some for
+  re-wording issues
+
 2010-11-01  userdelroot <r00t316@gmail.com>
+
+  * CHANGELOG.mkdn: updated changed log
 
   * AndroidManifest.xml, .../userdelroot/lithiummod/options/BlockAds.java,
   .../userdelroot/lithiummod/options/Options.java: fixed bug where thread was
@@ -6,6 +60,11 @@
 
   * res/drawable-hdpi/icon.png, res/drawable-ldpi/icon.png,
   res/drawable-mdpi/icon.png, res/values/strings.xml: added ronx icons
+
+2010-11-01  Rob Christie <robchristie1@gmail.com>
+
+  * res/drawable-hdpi/icon.png, res/drawable-ldpi/icon.png,
+  res/drawable-mdpi/icon.png: new icons
 
 2010-10-31  userdelroot <r00t316@gmail.com>
 

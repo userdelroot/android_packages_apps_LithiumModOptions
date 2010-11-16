@@ -31,6 +31,6 @@
   	<PreferenceCategory android:title="@string/lm_tweaks">
   	  <fac.userdelroot.lithiummod.options.SeekBarPref android:key="lcd_density" android:title="@string/lcd_density_title"
   													  android:dialogTitle="@string/lcd_density_dialog_title"/>
-  	<CheckBoxPreference android:key="jit_compiler" android:title="@string/jit_compiler" />
+  	<CheckBoxPreference android:key="disable_jit" android:title="@string/jit_compiler" />
   	</PreferenceCategory>
 </PreferenceScreen>

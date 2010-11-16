@@ -52,7 +52,7 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
     private static final String BLOCK_ADS = "block_ads";
     private static final String DOCK_DESK = "dock_desk";
     private static final String DOCK_CAR = "dock_car";
-    private static final String JIT_COMPILER = "jit_compiler";
+    private static final String DISABLE_JIT = "disable_jit";
     
     private static final String DOCK_STATE = "android.intent.extra.DOCK_STATE";
     private static final String DOCK_EVENT = "android.intent.extra.DOCK_EVENT";
@@ -188,8 +188,8 @@ public class Options extends PreferenceActivity implements OnSharedPreferenceCha
             return;
         }
         
-        if (key.equals(JIT_COMPILER)) {
-            boolean val = sharedPrefs.getBoolean(JIT_COMPILER, false);
+        if (key.equals(DISABLE_JIT)) {
+            boolean val = sharedPrefs.getBoolean(DISABLE_JIT, false);
             prepareProgressBar(JITCOMPILER, R.string.loading_please_wait);
             new JitCompiler(val, mContext, myStdio).start();
             return;
